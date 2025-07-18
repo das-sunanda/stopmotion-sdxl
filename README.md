@@ -13,4 +13,15 @@ This project presents a complete pipeline for fine-tuning the Stable Diffusion X
 ## Dataset
 - Curated from the film Memoir of a Snail (2025), frames sampled every ~5 seconds and labeled with neutral, descriptive prompts.
 - Format: Hugging Face parquet format
-- 
+<img src="images/dataset.png" width="800" height="400">
+
+## Installation
+```bash
+# Clone the repository
+git clone https://github.com/your-username/stopmotion-sdxl.git
+cd stopmotion-sdxl
+
+# Build the Singularity Container
+module load singularity/3.9.7
+singularity build --fakeroot diffusers.sif diffusers.def
+```
