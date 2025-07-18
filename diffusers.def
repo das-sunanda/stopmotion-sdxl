@@ -1,0 +1,81 @@
+Bootstrap: docker
+From: ubuntu:20.04
+
+%environment
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
+    export DEBIAN_FRONTEND=noninteractive
+    export TZ="America/Chicago"
+    export HUGGINGFACE_HUB_TOKEN="use-your-own-token"
+    export WANDB_API_KEY="use-your-own-api-key"
+
+%post
+    # Configure timezone
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+    apt-get update && apt-get install -y --no-install-recommends tzdata
+
+    # Install essentials
+    apt-get update && apt-get install -y --no-install-recommends \
+        software-properties-common \
+        curl \
+        wget \
+        git \
+        build-essential \
+        ca-certificates \
+        libssl-dev \
+        libffi-dev \
+        libglib2.0-0 \
+        libsm6 \
+        libxext6 \
+        libxrender-dev && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+    # Python 3.10 setup
+    add-apt-repository ppa:deadsnakes/ppa -y && apt-get update
+    apt-get install -y python3.10 python3.10-dev python3.10-distutils python3.10-venv
+    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
+
+    # Install pip
+    curl -sS https://bootstrap.pypa.io/get-pip.py | python3
+    pip3 install --upgrade pip
+
+    # Install PyTorch with CUDA 11.6 (adjust if needed)
+    pip3 install torch torchvision --extra-index-url https://download.pytorch.org/whl/cu116
+
+    # Clone and install diffusers
+    cd /opt
+    git clone https://github.com/huggingface/diffusers.git
+    cd diffusers
+    pip3 install -e .
+
+    # Install requirements for LoRA SDXL
+    cd examples/text_to_image
+    pip3 install -r requirements_sdxl.txt
+
+    # Install Hugging Face libraries
+    pip3 install transformers diffusers evaluate datasets
+    pip3 install torchmetrics gradio lpips
+
+    # Additional packages
+    pip3 install ipywidgets wandb accelerate
+
+    # Setup accelerate config for 4-GPU DDP
+    mkdir -p /root/.cache/huggingface/accelerate
+    cat <<EOF > /root/.cache/huggingface/accelerate/default_config.yaml
+compute_environment: LOCAL_MACHINE
+distributed_type: MULTI_GPU
+num_processes: 4
+mixed_precision: fp16
+use_cpu: false
+machine_rank: 0
+num_machines: 1
+main_process_ip: null
+main_process_port: null
+deepspeed_config: {}
+tpu_use_cluster: false
+EOF
+
+%runscript
+    # Use accelerate launch as default run command
+    exec accelerate launch /opt/diffusers/examples/text_to_image/train_text_to_image_lora_sdxl.py "\$@"
+
