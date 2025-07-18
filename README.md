@@ -46,7 +46,7 @@ python train_text_to_image_lora_sdxl.py \
 sbatch job_diffusers.sh
 ```
 ## Dataset
-- Output for the prompt *A clown performing magic tricks for a large audience.*
+- Output for the prompt ***'A clown performing magic tricks for a large audience.'***
 <img src="images/output.png" width="800" height="400">
 
 ## Acknowledgment
