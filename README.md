@@ -45,7 +45,7 @@ python train_text_to_image_lora_sdxl.py \
 # Multi-GPU (recommended; SLURM + Singularity)
 sbatch job_diffusers.sh
 ```
-## Dataset
+## Generated Outputs
 - Output for the prompt ***'A clown performing magic tricks for a large audience.'***
 <img src="images/output.png" width="800" height="400">
 
