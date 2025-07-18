@@ -25,3 +25,29 @@ cd stopmotion-sdxl
 module load singularity/3.9.7
 singularity build --fakeroot diffusers.sif diffusers.def
 ```
+## Training
+```bash
+# Single-GPU (local)
+python train_text_to_image_lora_sdxl.py \
+  --pretrained_model_name_or_path="stabilityai/stable-diffusion-xl-base-1.0" \
+  --pretrained_vae_model_name_or_path="madebyollin/sdxl-vae-fp16-fix" \
+  --dataset_name="path/to/your/dataset" \
+  --output_dir="output" \
+  --resolution=1024 \
+  --train_batch_size=1 \
+  --num_train_epochs=250 \
+  --checkpointing_steps=250 \
+  --gradient_accumulation_steps=4 \
+  --learning_rate=1e-4 \
+  --train_text_encoder \
+  --report_to="wandb"
+
+# Multi-GPU (recommended; SLURM + Singularity)
+sbatch job_diffusers.sh
+```
+## Dataset
+- Output for the prompt *A clown performing magic tricks for a large audience.*
+<img src="images/output.png" width="800" height="400">
+
+## Acknowledgment
+This research is supported by the Arkansas High Performance Computing Center and funded through multiple National Science Foundation grants and the Arkansas Economic Development Commission.
