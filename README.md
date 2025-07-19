@@ -47,7 +47,7 @@ sbatch job_diffusers.sh
 ```
 ## Generated Outputs
 - Output for the prompt ***'A clown performing magic tricks for a large audience.'***
-<img src="images/output.png" width="800" height="400">
+<img src="images/output2.png" width="800">
 
 ## Acknowledgment
 This research is supported by the Arkansas High Performance Computing Center which is funded through multiple National Science Foundation grants and the Arkansas Economic Development Commission.
